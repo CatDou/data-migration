@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
-import java.util.regex.Matcher;
 
 /**
  * @author James
@@ -50,7 +49,7 @@ public class SqlBufferReader extends BufferedReader {
         while (true) {
             int leftIndex = readLine.indexOf("{");
             int rightIndex = readLine.indexOf("}");
-            if (leftIndex == -1 && rightIndex == -1) {
+            if (leftIndex == -1 || rightIndex == -1) {
                 stringBuilder.append(readLine);
                 break;
             }
