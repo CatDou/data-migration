@@ -23,14 +23,12 @@ public class HikariPoolTest {
     @Test
     public void testHikatPool() {
         HikariConfig config = initConfig();
-        try {
+        try (
             HikariDataSource ds = new HikariDataSource(config);
             Connection conn = ds.getConnection();
-            Statement stmt = conn.createStatement();
+            Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("DROP TABLE IF EXISTS basic_pool_test");
             stmt.executeUpdate("CREATE TABLE basic_pool_test (id int primary key auto_increment)");
-            conn.close();
-            ds.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

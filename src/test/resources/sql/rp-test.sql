@@ -1,3 +1,7 @@
+@@ DROP DATABASE IF EXISTS {db_name};
+@@ CREATE DATABASE {db_name} charset=utf8mb4;
+@@ USE {db_name};
+
 DROP PROCEDURE if exists insert1;
 
 DELIMITER ;;
@@ -12,8 +16,8 @@ end while;
 end ;;
 DELIMITER ;
 
-DROP TABLE IF EXISTS `testdata_script`;
-CREATE TABLE `testdata_script` (
+@@ DROP TABLE IF EXISTS {tb_name};
+@@ CREATE TABLE {tb_name} (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `foo` varchar(25) DEFAULT NULL,
   `bar` int(11) DEFAULT NULL,

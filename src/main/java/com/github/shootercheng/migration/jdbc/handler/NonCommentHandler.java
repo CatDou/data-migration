@@ -6,7 +6,7 @@ import com.github.shootercheng.migration.jdbc.ScriptRunner;
  * @author James
  */
 public interface NonCommentHandler extends DelimiterHandler {
-    public static final String DELIMITER_NAME = "DELIMITER";
+    String DELIMITER_NAME = "DELIMITER";
 
     default boolean lineStartWithDelimiter(String trimmedLine) {
         if (trimmedLine.length() <= DELIMITER_NAME.length()) {

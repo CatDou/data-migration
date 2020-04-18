@@ -2,7 +2,6 @@ package com.github.shootercheng.migration.io;
 
 import com.github.shootercheng.migration.exception.ResourceException;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

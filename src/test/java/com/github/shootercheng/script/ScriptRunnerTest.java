@@ -61,4 +61,37 @@ public class ScriptRunnerTest {
             }
         }
     }
+
+    @Test
+    public void testScriptWithVar() {
+        String sqlPath = "sql/rp-test.sql";
+        Reader reader = null;
+        Connection proxyConn = null;
+        String propertiesPath = "sql/rp.properties";
+        try {
+            proxyConn = getConnection();
+            ScriptRunner scriptRunner = ScriptRunnerFactory.createScriptRunner(DbType.MYSQL, proxyConn);
+            reader = Resource.getResourceAsReader(sqlPath);
+            Properties properties = Resource.loadProperties(propertiesPath);
+            scriptRunner.setProperties(properties);
+            scriptRunner.runScript(reader);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (proxyConn != null) {
+                try {
+                    proxyConn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
