@@ -1,22 +1,6 @@
-/**
- * Copyright 2009-2020 the original author or authors.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this io except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.github.shootercheng.migration.jdbc;
 
 import com.github.shootercheng.migration.io.SqlBufferReader;
-import com.github.shootercheng.migration.jdbc.handler.DefaultDelimiterHandler;
 import com.github.shootercheng.migration.jdbc.handler.DelimiterHandler;
 
 import java.io.BufferedReader;
@@ -30,16 +14,16 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Properties;
 
+import static com.github.shootercheng.migration.common.MigrationConstant.LINE_SEPARATOR;
+
 /**
- * @author Clinton Begin
+ * @author James
  */
-public class ScriptRunner {
+public abstract class BaseScriptRunner {
 
-    private static final String LINE_SEPARATOR = System.lineSeparator();
+    public static final String DEFAULT_DELIMITER = ";";
 
-    private static final String DEFAULT_DELIMITER = ";";
-
-    private final Connection connection;
+    private Connection connection;
 
     private boolean stopOnError;
     private boolean throwWarning;
@@ -54,13 +38,7 @@ public class ScriptRunner {
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter;
 
-    private DelimiterHandler delimiterHandler = new DefaultDelimiterHandler();
-
     private Properties properties;
-
-    public ScriptRunner(Connection connection) {
-        this.connection = connection;
-    }
 
     public void setStopOnError(boolean stopOnError) {
         this.stopOnError = stopOnError;
@@ -109,16 +87,24 @@ public class ScriptRunner {
         this.fullLineDelimiter = fullLineDelimiter;
     }
 
-    public void setDelimiterHandler(DelimiterHandler delimiterHandler) {
-        this.delimiterHandler = delimiterHandler;
-    }
-
     public Properties getProperties() {
         return properties;
     }
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public String getDelimiter() {
+        return delimiter;
     }
 
     public void runScript(Reader reader) {
@@ -230,34 +216,19 @@ public class ScriptRunner {
         }
     }
 
-    private void handleLine(StringBuilder command, String line) throws SQLException {
-        String trimmedLine = line.trim();
-        if (delimiterHandler.resetDelimiter(this, trimmedLine)) {
-            println(trimmedLine);
-        } else if (lineIsComment(trimmedLine)) {
-            println(trimmedLine);
-        } else if (commandReadyToExecute(trimmedLine)) {
-            command.append(line, 0, line.lastIndexOf(delimiter));
-            command.append(LINE_SEPARATOR);
-            println(command);
-            executeStatement(command.toString());
-            command.setLength(0);
-        } else if (trimmedLine.length() > 0) {
-            command.append(line);
-            command.append(LINE_SEPARATOR);
-        }
-    }
+    public abstract void handleLine(StringBuilder command, String line) throws SQLException;
 
-    private boolean lineIsComment(String trimmedLine) {
+    public boolean lineIsComment(String trimmedLine) {
         return trimmedLine.startsWith("//") || trimmedLine.startsWith("--") || trimmedLine.startsWith("/*");
     }
 
-    private boolean commandReadyToExecute(String trimmedLine) {
+
+    public boolean commandReadyToExecute(String trimmedLine) {
         // issue #561 remove anything after the delimiter
         return !fullLineDelimiter && trimmedLine.contains(delimiter) || fullLineDelimiter && trimmedLine.equals(delimiter);
     }
 
-    private void executeStatement(String command) throws SQLException {
+    public void executeStatement(String command) throws SQLException {
         Statement statement = connection.createStatement();
         try {
             statement.setEscapeProcessing(escapeProcessing);
@@ -304,7 +275,7 @@ public class ScriptRunner {
         }
     }
 
-    private void printResults(Statement statement, boolean hasResults) {
+    public void printResults(Statement statement, boolean hasResults) {
         if (!hasResults) {
             return;
         }
@@ -328,25 +299,24 @@ public class ScriptRunner {
         }
     }
 
-    private void print(Object o) {
+    public void print(Object o) {
         if (logWriter != null) {
             logWriter.print(o);
             logWriter.flush();
         }
     }
 
-    private void println(Object o) {
+    public void println(Object o) {
         if (logWriter != null) {
             logWriter.println(o);
             logWriter.flush();
         }
     }
 
-    private void printlnError(Object o) {
+    public void printlnError(Object o) {
         if (errorLogWriter != null) {
             errorLogWriter.println(o);
             errorLogWriter.flush();
         }
     }
-
 }
