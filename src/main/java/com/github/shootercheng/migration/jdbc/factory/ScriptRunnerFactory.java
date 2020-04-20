@@ -1,8 +1,9 @@
 package com.github.shootercheng.migration.jdbc.factory;
 
 import com.github.shootercheng.migration.common.DbType;
-import com.github.shootercheng.migration.jdbc.ScriptRunner;
-import com.github.shootercheng.migration.jdbc.handler.MySqlDelimiterHandler;
+import com.github.shootercheng.migration.jdbc.BaseScriptRunner;
+import com.github.shootercheng.migration.jdbc.MySqlScriptRunner;
+import com.github.shootercheng.migration.jdbc.PostgresScriptRunner;
 
 import java.sql.Connection;
 
@@ -11,19 +12,23 @@ import java.sql.Connection;
  */
 public class ScriptRunnerFactory {
 
-    public static ScriptRunner createScriptRunner(DbType dbType, Connection connection) {
-        ScriptRunner scriptRunner = new ScriptRunner(connection);
+    public static BaseScriptRunner createScriptRunner(DbType dbType, Connection connection) {
+        BaseScriptRunner baseScriptRunner = null;
         switch (dbType) {
             case MYSQL:
-                scriptRunner.setDelimiterHandler(new MySqlDelimiterHandler());
+                baseScriptRunner = new MySqlScriptRunner(connection);
                 break;
             case POSTGRESQL:
+                baseScriptRunner = new PostgresScriptRunner(connection);
                 break;
             case ORACLE:
                 break;
             default:
                 break;
         }
-        return scriptRunner;
+        if (baseScriptRunner == null) {
+            throw new IllegalArgumentException("script runner not init " + dbType);
+        }
+        return baseScriptRunner;
     }
 }

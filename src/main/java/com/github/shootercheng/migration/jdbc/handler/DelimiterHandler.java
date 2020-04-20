@@ -1,11 +1,11 @@
 package com.github.shootercheng.migration.jdbc.handler;
 
 
-import com.github.shootercheng.migration.jdbc.ScriptRunner;
+import com.github.shootercheng.migration.jdbc.MySqlScriptRunner;
 
 /**
  * @author James
  */
 public interface DelimiterHandler {
-    boolean resetDelimiter(ScriptRunner scriptRunner, String line);
+    boolean resetDelimiter(MySqlScriptRunner scriptRunner, String line, StringBuilder command);
 }

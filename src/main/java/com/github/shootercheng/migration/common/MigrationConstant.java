@@ -15,4 +15,6 @@ public class MigrationConstant {
      * {} sql variable
      */
     public static final Pattern SQL_MARK = Pattern.compile("\\{(.*?)\\}");
+
+    public static final String LINE_SEPARATOR = System.lineSeparator();
 }

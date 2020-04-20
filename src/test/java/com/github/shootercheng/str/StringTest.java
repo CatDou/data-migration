@@ -31,7 +31,7 @@ public class StringTest {
         while (true) {
             int leftIndex = sql.indexOf("{");
             int rightIndex = sql.indexOf("}");
-            if (leftIndex == -1 && rightIndex == -1) {
+            if (leftIndex == -1 || rightIndex == -1) {
                 stringBuilder.append(sql);
                 break;
             }

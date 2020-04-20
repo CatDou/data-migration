@@ -2,8 +2,9 @@ package com.github.shootercheng.script;
 
 import com.github.shootercheng.migration.common.DbType;
 import com.github.shootercheng.migration.io.Resource;
-import com.github.shootercheng.migration.jdbc.ScriptRunner;
+import com.github.shootercheng.migration.jdbc.MySqlScriptRunner;
 import com.github.shootercheng.migration.jdbc.factory.ScriptRunnerFactory;
+import com.github.shootercheng.migration.jdbc.handler.MySqlDelimiterHandler;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class ScriptRunnerTest {
         Connection proxyConn = null;
         try {
             proxyConn = getConnection();
-            ScriptRunner scriptRunner = ScriptRunnerFactory.createScriptRunner(DbType.MYSQL, proxyConn);
+            MySqlScriptRunner scriptRunner = new MySqlScriptRunner(proxyConn, new MySqlDelimiterHandler());
             reader = Resource.getResourceAsReader(sqlPath);
             scriptRunner.runScript(reader);
         } catch (SQLException e) {
@@ -70,7 +71,7 @@ public class ScriptRunnerTest {
         String propertiesPath = "sql/rp.properties";
         try {
             proxyConn = getConnection();
-            ScriptRunner scriptRunner = ScriptRunnerFactory.createScriptRunner(DbType.MYSQL, proxyConn);
+            MySqlScriptRunner scriptRunner = new MySqlScriptRunner(proxyConn, new MySqlDelimiterHandler());
             reader = Resource.getResourceAsReader(sqlPath);
             Properties properties = Resource.loadProperties(propertiesPath);
             scriptRunner.setProperties(properties);
